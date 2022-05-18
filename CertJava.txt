@@ -1,0 +1,15 @@
+# 1. run as administrator the Command Prompt (cmd)
+# 2. copy there the following 3 lines (with the empty one)
+cd c:\CheckMacBarcode
+java -jar CheckMac.jar cert
+
+# 3. click Enter when the following line will appear:
+ "Enter certificate to add to trusted keystore or 'q' to quit: [1]" 
+
+
+cd\
+cd program files (x86)
+cd java
+cd jre6
+cd bin
+java -jar c:\at-etx203-battmac\checkmac.jar cert
