@@ -20,6 +20,9 @@ proc DateTime_Test {bar} {
   set com $gaSet(comDut$bar)
   Send $com "exit all\r" stam 0.25 
   set ret [Send $com "configure system\r" >system]
+  if {$ret!=0} {
+    $gaGui(entDUT$bar) configure -bg red -text "$getBar. Can't get \"config-system\""
+  }
   if {$gaSet(performBattTest)==0} {
     return $ret
   }
@@ -172,7 +175,7 @@ proc Login {bar} {
     set ret [Wait "Wait for ETX up" 10 white]
     if {$ret!=0} {return $ret}  
   }
-  for {set i 1} {$i <= 15} {incr i} { 
+  for {set i 1} {$i <= 22} {incr i} { 
     if {$gaSet(act)==0} {return -2}
     Status "Login into ETX-205"
     puts "Login into ETX-205 i:$i"; update

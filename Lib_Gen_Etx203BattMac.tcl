@@ -1,52 +1,3 @@
-# ***************************************************************************
-# SaveInit
-# ***************************************************************************
-proc SaveInit {} {
-  global gaSet  
-  set id [open [info host]/init$gaSet(pair).tcl w]
-  puts $id "set gaGui(xy) +[winfo x .]+[winfo y .]"
-  puts $id "set gaSet(log)     \"$gaSet(log)\""
-  if {[info exists gaSet(JavaPath)] && $gaSet(JavaPath)!=""} {
-    puts $id "set gaSet(JavaPath)     \"$gaSet(JavaPath)\""
-  }
-  for {set ba 1} {$ba<=$gaSet(maxMultiQty)} {incr ba} {
-    puts $id "set gaSet(comDut$ba) \"$gaSet(comDut$ba)\""
-  }
-  puts $id "set gaSet(testedProduct)     \"$gaSet(testedProduct)\""
-  
-  if {[info exists gaSet(performSWTest)]} {
-    puts $id "set gaSet(performSWTest)     \"$gaSet(performSWTest)\""
-  }
-  if {[info exists gaSet(entSwVer)]} {
-    puts $id "set gaSet(entSwVer)          \"$gaSet(entSwVer)\""
-  }
-  
-  if {[info exists gaSet(performHWTest)]} {
-    puts $id "set gaSet(performHWTest)     \"$gaSet(performHWTest)\""
-  }
-  if {[info exists gaSet(entHwVer)]} {
-    puts $id "set gaSet(entHwVer)          \"$gaSet(entHwVer)\""
-  }
-  
-  if {[info exists gaSet(performSwDateTest)]} {
-    puts $id "set gaSet(performSwDateTest)     \"$gaSet(performSwDateTest)\""
-  }
-  if {[info exists gaSet(entSwDate)]} {
-    puts $id "set gaSet(entSwDate)          \"$gaSet(entSwDate)\""
-  }
-  
-  if {[info exists gaSet(performInfoTest)]} {
-    puts $id "set gaSet(performInfoTest)     \"$gaSet(performInfoTest)\""
-  }
-  if {[info exists gaSet(entInfo)]} {
-    regsub -all \" $gaSet(entInfo) \\" entInfo
-    puts $id "set gaSet(entInfo)          \"$entInfo\""
-  }
- 
-  close $id
-   
-}
-
 #***************************************************************************
 #** MyTime
 #***************************************************************************
@@ -401,8 +352,8 @@ proc GetDbrName {} {
   after 1000
   if ![file exists MarkNam_$barcode.txt] {
     set txt  "File $fileName is not created. Verify the Barcode"
-    set res [DialogBox -text $txt -icon /images/error.gif -title "Get Dbr Name"]
-    return -1
+    #set res [DialogBox -text $txt -icon /images/error.gif -title "Get Dbr Name"]
+    return $txt
   }
   
   set fileId [open "$fileName"]
@@ -410,13 +361,17 @@ proc GetDbrName {} {
     set res [read $fileId]    
   close $fileId
   
+  after 500
+  file delete -force MarkNam_$barcode.txt
+  
   #set txt "$barcode $res"
   set txt "[string trim $res]"
   puts "GetDbrName txt: <$txt> res:<$res>"
+  if [string match *ERROR* $txt] {
+    return $txt  
+  }
   update
   set gaSet(DutFullName) $res
-  
-  file delete -force MarkNam_$barcode.txt
   #file mkdir [regsub -all / $res .]
   
   puts ""
@@ -608,4 +563,52 @@ proc Delayms { ip_timeSec } {
   set x 0
   after $ip_timeSec { set x 1 }
   vwait x
+}
+# ***************************************************************************
+# SaveInit
+# ***************************************************************************
+proc SaveInit {} {
+  global gaSet  
+  set id [open [info host]/init$gaSet(pair).tcl w]
+  puts $id "set gaGui(xy) +[winfo x .]+[winfo y .]"
+  puts $id "set gaSet(log)     \"$gaSet(log)\""
+  if {[info exists gaSet(JavaPath)] && $gaSet(JavaPath)!=""} {
+    puts $id "set gaSet(JavaPath)     \"$gaSet(JavaPath)\""
+  }
+  for {set ba 1} {$ba<=$gaSet(maxMultiQty)} {incr ba} {
+    puts $id "set gaSet(comDut$ba) \"$gaSet(comDut$ba)\""
+  }
+  puts $id "set gaSet(testedProduct)     \"$gaSet(testedProduct)\""
+  
+  if {[info exists gaSet(performSWTest)]} {
+    puts $id "set gaSet(performSWTest)     \"$gaSet(performSWTest)\""
+  }
+  if {[info exists gaSet(entSwVer)]} {
+    puts $id "set gaSet(entSwVer)          \"$gaSet(entSwVer)\""
+  }
+  
+  if {[info exists gaSet(performHWTest)]} {
+    puts $id "set gaSet(performHWTest)     \"$gaSet(performHWTest)\""
+  }
+  if {[info exists gaSet(entHwVer)]} {
+    puts $id "set gaSet(entHwVer)          \"$gaSet(entHwVer)\""
+  }
+  
+  if {[info exists gaSet(performSwDateTest)]} {
+    puts $id "set gaSet(performSwDateTest)     \"$gaSet(performSwDateTest)\""
+  }
+  if {[info exists gaSet(entSwDate)]} {
+    puts $id "set gaSet(entSwDate)          \"$gaSet(entSwDate)\""
+  }
+  
+  if {[info exists gaSet(performInfoTest)]} {
+    puts $id "set gaSet(performInfoTest)     \"$gaSet(performInfoTest)\""
+  }
+  if {[info exists gaSet(entInfo)]} {
+    regsub -all \" $gaSet(entInfo) \\" entInfo
+    puts $id "set gaSet(entInfo)          \"$entInfo\""
+  }
+ 
+  close $id
+   
 }

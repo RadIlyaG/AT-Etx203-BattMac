@@ -21,6 +21,10 @@ proc ScanUutBarcode {ba} {
       if {([string length $barc] ne 11) && ([string length $barc] ne 12)} {
         if {[string length $barc] eq 0} {
           puts "$i is empty entry"
+          if {$i=="4"} {
+            DialogBox -title "Wrong ID barcode" -message "UUT's 4 barcode can't be empty" -type Ok
+            return -1  
+          }
         } else {
           DialogBox -title "Wrong ID barcode" -message "$barc is not legal ($i)" -type Ok
           return -1
@@ -90,6 +94,11 @@ proc ScanUutBarcode {ba} {
     switch -exact -- $gaSet(testedProduct) {
       ETX203 - ETX2i10G - ETX2iB - ETX205 {
         set ret [GetDbrName]
+        puts "\n Ret of GetDbrName: <$ret>"
+        if {$ret != 0} {
+          set res [DialogBox -text "Problem to get the DBR Name:\n$ret" -icon /images/error.gif -title "Get DBR Name"]
+          return -1  
+        }
         puts "DutFullName: $gaSet(DutFullName)"
         
         ## 08:27 20/02/2022 'stam' should be replaced by Menashe+MeirKa+Ronen's options
