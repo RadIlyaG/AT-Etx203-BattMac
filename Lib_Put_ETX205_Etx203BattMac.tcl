@@ -21,7 +21,7 @@ proc DateTime_Test {bar} {
   Send $com "exit all\r" stam 0.25 
   set ret [Send $com "configure system\r" >system]
   if {$ret!=0} {
-    $gaGui(entDUT$bar) configure -bg red -text "$getBar. Can't get \"config-system\""
+    $gaGui(entDUT$bar) configure -bg red -text "$getBar. Can't get config-system"
   }
   if {$gaSet(performBattTest)==0} {
     return $ret
