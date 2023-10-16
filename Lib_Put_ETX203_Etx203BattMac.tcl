@@ -100,6 +100,7 @@ proc Login {bar} {
     lt       {set user "ecorad" ; set password "Dwdm.c0re!"}
     cellcom  {set user "admin"  ; set password "Reshatot"}
     kos      {set user "su"     ; set password "Mgrthde6zZMbhA"}
+    GC       {set user "su"     ; set password "naijah6E"}
     default  {set user "su"     ; set password "1234"}
   }  
   Status "Login into ETX-2x"
