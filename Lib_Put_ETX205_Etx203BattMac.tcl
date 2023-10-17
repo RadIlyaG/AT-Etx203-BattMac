@@ -176,6 +176,7 @@ proc Login {bar} {
     if {$ret!=0} {return $ret}  
   }
   for {set i 1} {$i <= 22} {incr i} { 
+    set ret -1
     if {$gaSet(act)==0} {return -2}
     Status "Login into ETX-205"
     puts "Login into ETX-205 i:$i"; update

@@ -8,8 +8,10 @@ proc DateTime_Test {bar} {
   set gaSet(fail) "Logon fail"
   set getBar [$gaGui(entDUT$bar) cget -text]
   set ret [Login $bar]
+  puts "ret of Login 1: <$ret>"
   if {$ret!=0} {
     set ret [Login $bar]
+    puts "ret of Login 2: <$ret>"
     if {$ret!=0} {
       AddToLog "FAIL..$gaSet(fail)..FAIL"
       set failTxt "Login fail"
@@ -204,6 +206,7 @@ proc Login {bar} {
     if {$ret!=0} {return $ret}  
   }
   for {set i 1} {$i <= 15} {incr i} { 
+    set ret -1
     if {$gaSet(act)==0} {return -2}
     Status "Login into ETX-203"
     puts "Login into ETX-203 i:$i"; update
@@ -225,9 +228,11 @@ proc Login {bar} {
     if {[string match *login:* $buffer]} { }
     if {[string match *:~$* $buffer] || [string match *login:* $buffer] || [string match *Password:* $buffer]} {
       Send $com \x1F\r\r -2I
+      puts "Login returnA"
       return 0
     }
   }
+  puts "Login 1 ret:<$ret>"
   if {$ret==0} {
     if {[string match *user* $buffer]} {
       Send $com "$user\r" stam 1
