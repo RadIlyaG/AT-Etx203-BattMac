@@ -259,7 +259,7 @@ proc ReadHWver {bar} {
   if {$ret!=0} {return $ret}
   set ret [Send $com "show device-information\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}
-  set res [regexp {Hw\:\s+([\d\.\(\)\w\/]+)\,\s} $buffer ma val ]
+  set res [regexp {Hw\:\s+([\d\.\(\)\w\/\s]+)\,\s} $buffer ma val ]
   if {$res==0} {
     set gaSet(fail) "Read HW ver. fail"
     return -1
