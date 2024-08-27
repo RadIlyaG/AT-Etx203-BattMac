@@ -8,6 +8,7 @@ proc ScanUutBarcode {ba} {
   update
   puts "ScanUutBarcode $ba"; update
   set gaSet(act) 1
+  Power all on
   
   for {set i 1} {$i<=$gaSet(maxMultiQty)} {incr i} {
     $gaGui(entDUT$i) configure -bg SystemWindow -fg SystemWindowText -text [string toupper [$gaGui(entDUT$i) cget -text]]
@@ -294,6 +295,22 @@ proc ScanUutBarcode {ba} {
             set ret [InsertSerNum $bar]
             if {$ret=="0"} {
               set txt  "$barc. \'$gaSet(dutSerNum)\' found"
+              AddToLog $txt
+            } else {
+              $gaGui(entDUT$bar) configure -bg red -text "$barc. $gaSet(fail)" 
+              AddToLog $gaSet(fail)
+              set ret -1
+            }
+          } else {
+            set ret 0
+          }  
+        }
+        
+        if {$ret==0} {
+          if {$gaSet(performDgTest)==1} {
+            set ret [DyingGasp $bar]
+            if {$ret=="0"} {
+              set txt  "$barc. \'DyingGasp\' found in report"
               AddToLog $txt
             } else {
               $gaGui(entDUT$bar) configure -bg red -text "$barc. $gaSet(fail)" 

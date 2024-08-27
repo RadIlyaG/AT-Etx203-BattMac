@@ -23,7 +23,7 @@ if {![info exists gaSet(testedProduct)]} {
 }
 source Gui_Etx203BattMac.tcl
 source [info host]/init$gaSet(pair).tcl
-source Lib_Put_[set gaSet(testedProduct)]_Etx203BattMac.tcl
+
 source Lib_Gen_Etx203BattMac.tcl
 source Lib_Main_Etx203BattMac.tcl
 source Lib_DialogBox.tcl
@@ -52,7 +52,7 @@ set gaSet(filterBuffer) 1
 GUI
 #BuildTests
 update
-
+source Lib_Put_[set gaSet(testedProduct)]_Etx203BattMac.tcl
 #after 50
 
 #Status "Ready"

@@ -102,6 +102,10 @@ proc GUI {} {
       set gaGui(insertSerNum) [checkbutton $fr32f.insertSerNum -variable gaSet(insertSerNum) -command {}]
       set l7 [Label $fr32f.l7 -text "Insert Serial Number "]
       
+      set gaGui(performDgTest) [checkbutton $fr32f.performDgTest -variable gaSet(performDgTest) -command {}]
+      set l8 [Label $fr32f.l8 -text "DyingGasp Test "]
+      #set gaGui(entDg) [Entry $fr32f.entDg -textvariable gaSet(entDg) -width 60]
+      
       
       grid $gaGui(performBattTest)   $l01                   -sticky w  
       grid $gaGui(performMacTest)    $l1                    -sticky w 
@@ -111,6 +115,7 @@ proc GUI {} {
       grid $gaGui(performSwDateTest) $l5 $gaGui(entSwDate)  -sticky w 
       grid $gaGui(performInfoTest)   $l6 $gaGui(entInfo)  -sticky w 
       grid $gaGui(insertSerNum)      $l7 -sticky w 
+      grid $gaGui(performDgTest)     $l8 -sticky w 
       
     pack configure $fr32 -fill x
     set b1 [radiobutton $fr3.b1 -text "Create new log" -variable gaSet(logType) \
@@ -390,6 +395,17 @@ proc ToggleInsertSerNum {} {
   global gaGui gaSet  
 }
 
+proc TogglePerformDgTest {} {
+  global gaGui gaSet
+  if {[winfo exists $gaGui(performDgTest)] && [info exists gaSet(performDgTest)] && \
+      [winfo exists $gaGui(entDg)] && [info exists gaSet(entDg)]} {
+    if {$gaSet(performDgTest)==1} {
+      $gaGui(entDg) configure -state normal
+    } elseif {$gaSet(performDgTest)==0} {
+      $gaGui(entDg) configure -state disabled
+    } 
+  }
+}
 # ***************************************************************************
 # GuiGetSerNum
 # ***************************************************************************

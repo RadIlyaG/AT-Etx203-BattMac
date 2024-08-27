@@ -605,10 +605,34 @@ proc SaveInit {} {
     puts $id "set gaSet(performInfoTest)     \"$gaSet(performInfoTest)\""
   }
   if {[info exists gaSet(entInfo)]} {
-    regsub -all \" $gaSet(entInfo) \\" entInfo
+    regsub -all \" $gaSet(entInfo) \\" entInfo  ; # just for balance of "
     puts $id "set gaSet(entInfo)          \"$entInfo\""
   }
  
   close $id
    
 }
+# ***************************************************************************
+# Power
+# ***************************************************************************
+proc Power {ps state} {
+  global gaSet gaGui 
+  puts "[MyTime] Power $ps $state"
+#   RLSound::Play information
+#   DialogBox -type OK -message "Turn $ps $state"
+#   return 0
+  set ret 0
+  switch -exact -- $ps {
+    1   {set rlyL 1}
+    2   {set rlyL 2}
+    all {set rlyL "1 2"}
+  } 
+  foreach rly $rlyL {
+    puts "$rly $state"
+    if [catch {exec ./hidusb-relay-cmd.exe $state $rly} res] {
+        return $res
+    }
+  }
+  return 0
+}
+

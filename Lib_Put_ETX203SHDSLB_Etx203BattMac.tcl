@@ -1,4 +1,7 @@
 source Lib_Put_ETX203_Etx203BattMac.tcl
+set gaSet(performDgTest) 0
+$gaGui(performDgTest) configure -state disabled
+update
 # ***************************************************************************
 # DateTime_Test
 # ***************************************************************************

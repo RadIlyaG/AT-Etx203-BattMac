@@ -1,4 +1,6 @@
-
+#set gaSet(performDgTest) 0
+$gaGui(performDgTest) configure -state normal
+update
 # ***************************************************************************
 # DateTime_Test
 # ***************************************************************************
@@ -510,7 +512,6 @@ proc AdminFactAll {bar} {
 # VerifySN
 # ***************************************************************************
 proc VerifySN {bar} {
-  global gaSet buffer
   global gaSet buffer gaGui
   set ret [Login $bar]
   if {$ret!=0} {
@@ -543,4 +544,88 @@ proc VerifySN {bar} {
     set gaSet(fail) "SN is $gaSet(dutSerNum) instead of 000000$gaSet(entSN$bar)"
     return -1
   }
+}
+
+# ***************************************************************************
+# DyingGasp
+# ***************************************************************************
+proc DyingGasp {bar} {
+  global gaSet buffer gaGui
+  set ret [Dyigasp_ClearLog $bar]
+  if {$ret!=0} {return $ret}
+  Power all off
+  after 3000
+  Power all on
+  set ret [Wait "Wait UUT up" 30 white]
+  if {$ret!=0} {return $ret}
+  set ret [Dyigasp_ReadLog $bar]
+  return $ret
+  
+}
+
+# ***************************************************************************
+# Dyigasp_ClearLog
+# ***************************************************************************
+proc Dyigasp_ClearLog {bar} {
+  global gaSet buffer
+  Status "Dyigasp Clear Log $bar"
+  Power all on
+  set com $gaSet(comDut$bar)
+  Send $com "\r" stam 0.5
+  set ret [Login $bar]
+  if {$ret!=0} {
+    #set ret [Login]
+    if {$ret!=0} {return $ret}
+  }   
+  set gaSet(fail) "$bar. Clear Log fail"  
+  set ret [Send $com "exit all\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  set ret [Send $com "configure\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  set ret [Send $com "reporting\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  set ret [Send $com "clear-alarm-log  all\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  set ret [Send $com "show brief-log\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  return $ret
+}
+# ***************************************************************************
+# Dyigasp_ReadLog
+# ***************************************************************************
+proc Dyigasp_ReadLog {bar} {
+  global gaSet buffer
+  Status "Dyigasp Read Log $bar"
+  Power all on
+  set com $gaSet(comDut$bar)
+  Send $com "\r" stam 0.5
+  set ret [Login $bar]
+  if {$ret!=0} {
+    #set ret [Login]
+    if {$ret!=0} {return $ret}
+  }   
+  
+  set gaSet(fail) "$bar. Read Log fail"  
+  set ret [Send $com "exit all\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  set ret [Send $com "configure\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  set ret [Send $com "reporting\r" $gaSet(prompt)]
+  if {$ret!=0} {return $ret}
+  Send $com "show brief-log\r" "stam 0.5"
+  set ret -1
+  for {set i 1} {$i<=5} {incr i} {
+    if {[string match *dying_gasp* $buffer]} {
+      set ret [Send $com "\3\r\r\r"  $gaSet(prompt)]
+      set ret 0
+      break
+    }
+    if {[string match *reporting* $buffer]} {
+      break
+    }
+  }
+  if {$ret eq "-1"} {
+    set gaSet(fail) "$bar. No \'dying_gasp\' event in the Log" 
+  }
+  return $ret
 }

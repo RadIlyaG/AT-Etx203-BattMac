@@ -1,4 +1,6 @@
-
+set gaSet(performDgTest) 0
+$gaGui(performDgTest) configure -state disabled
+update
 # ***************************************************************************
 # DateTime_Test
 # ***************************************************************************
