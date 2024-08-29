@@ -1,4 +1,4 @@
-set gaGui(xy) +337+283
+set gaGui(xy) +600+92
 set gaSet(log)     "C:/logs/2017.06.12-16.09.27_.txt"
 set gaSet(JavaPath)     "C:/Program Files/Java/jre1.8.0_191/bin/java.exe"
 set gaSet(comDut1) "8"

@@ -314,7 +314,7 @@ proc ScanUutBarcode {ba} {
               AddToLog $txt
             } else {
               $gaGui(entDUT$bar) configure -bg red -text "$barc. $gaSet(fail)" 
-              AddToLog $gaSet(fail)
+              AddToLog "$barc. $gaSet(fail)" 
               set ret -1
             }
           } else {

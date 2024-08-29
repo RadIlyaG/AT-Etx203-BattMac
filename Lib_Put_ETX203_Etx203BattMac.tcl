@@ -577,7 +577,7 @@ proc Dyigasp_ClearLog {bar} {
     #set ret [Login]
     if {$ret!=0} {return $ret}
   }   
-  set gaSet(fail) "$bar. Clear Log fail"  
+  set gaSet(fail) "Clear Log fail"  
   set ret [Send $com "exit all\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}
   set ret [Send $com "configure\r" $gaSet(prompt)]
@@ -605,7 +605,7 @@ proc Dyigasp_ReadLog {bar} {
     if {$ret!=0} {return $ret}
   }   
   
-  set gaSet(fail) "$bar. Read Log fail"  
+  set gaSet(fail) "Read Log fail"  
   set ret [Send $com "exit all\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}
   set ret [Send $com "configure\r" $gaSet(prompt)]
@@ -625,7 +625,7 @@ proc Dyigasp_ReadLog {bar} {
     }
   }
   if {$ret eq "-1"} {
-    set gaSet(fail) "$bar. No \'dying_gasp\' event in the Log" 
+    set gaSet(fail) "No \'dying_gasp\' event in the Log" 
   }
   return $ret
 }

@@ -209,37 +209,58 @@ proc CheckMac {ba} {
   global gaSet gaGui
   
   set barc [string range $gaSet(entDUT$ba) 0 10]
-  set res [catch {exec $gaSet(JavaPath) -jar [pwd]/CheckMAC.jar $barc A0B1C2D3E4F5} resChk]
-  #puts "$barc res:<$res> resChk:<$resChk>"
-  
-  puts "[MyTime] Res of CheckMAC $barc : <$resChk>" ; update
-  #set gaSet(ent1) ""
-  if {$resChk=="0"} {  
-    #set gaSet(entDUT$ba) "There is no MAC connected to $barc"
-    set gaSet(fail) "FAIL...There is no MAC connected to $barc...FAIL"
-    set txt "$gaSet(fail)"  
-    
-    $gaGui(entDUT$ba) configure -background red
-    set ret -1
-  } elseif {$resChk!="0"} {
-    #puts "res:<$res>"
-    if {$res=="1"} {
-      set gaSet(entDUT$ba) "Error"
-      set txt "$resChk" 
-      $gaGui(entDUT$ba) configure -background red 
+  foreach {ret resTxt} [::RLWS::CheckMac $barc A0B1C2D3E4F5] {}
+  if {$ret=="-1"} {
+    set gaSet(entDUT$ba) "Error"
+    set txt "$resTxt" 
+    $gaGui(entDUT$ba) configure -background red 
+  } else {
+    if {$resTxt == "NC, NC"} {
+      set gaSet(fail) "FAIL...There is no MAC connected to $barc...FAIL"
+      set txt $gaSet(fail)      
+      $gaGui(entDUT$ba) configure -background red
       set ret -1
     } else {
-      ## remove the 'already' word
-      set resChk [lreplace $resChk [lsearch $resChk already] [lsearch $resChk already]]
-      ## remove ID Number and add the barcode itself
-      set resChk [lreplace $resChk [lsearch $resChk ID] [lsearch $resChk Number ] $barc]
-      ## remove : from MAC
-      set resChk [concat [lrange $resChk 0 end-1] [string trimleft [lindex $resChk end] :]]
-      set gaSet($ba.dbrMac) [lindex $resChk end]
-      Status $resChk
-      set txt "$resChk"
-      #$gaGui(entDUT$ba) configure -background green
+      set gaSet($ba.dbrMac) [lindex $resTxt end]
+      Status $resTxt
+      set txt "$resTxt"
       set ret 0
+    }
+  }
+  
+  if 0 {
+    set res [catch {exec $gaSet(JavaPath) -jar [pwd]/CheckMAC.jar $barc A0B1C2D3E4F5} resChk]
+    #puts "$barc res:<$res> resChk:<$resChk>"
+    
+    puts "[MyTime] Res of CheckMAC $barc : <$resChk>" ; update
+    #set gaSet(ent1) ""
+    if {$resChk=="0"} {  
+      #set gaSet(entDUT$ba) "There is no MAC connected to $barc"
+      set gaSet(fail) "FAIL...There is no MAC connected to $barc...FAIL"
+      set txt "$gaSet(fail)"  
+      
+      $gaGui(entDUT$ba) configure -background red
+      set ret -1
+    } elseif {$resChk!="0"} {
+      #puts "res:<$res>"
+      if {$res=="1"} {
+        set gaSet(entDUT$ba) "Error"
+        set txt "$resChk" 
+        $gaGui(entDUT$ba) configure -background red 
+        set ret -1
+      } else {
+        ## remove the 'already' word
+        set resChk [lreplace $resChk [lsearch $resChk already] [lsearch $resChk already]]
+        ## remove ID Number and add the barcode itself
+        set resChk [lreplace $resChk [lsearch $resChk ID] [lsearch $resChk Number ] $barc]
+        ## remove : from MAC
+        set resChk [concat [lrange $resChk 0 end-1] [string trimleft [lindex $resChk end] :]]
+        set gaSet($ba.dbrMac) [lindex $resChk end]
+        Status $resChk
+        set txt "$resChk"
+        #$gaGui(entDUT$ba) configure -background green
+        set ret 0
+      }
     }
   }
   
@@ -338,44 +359,54 @@ proc GetDbrName {} {
   puts "\r[MyTime] GetDbrName"; update
   set barcode $gaSet(entDUT4)
   
-  if [file exists MarkNam_$barcode.txt] {
+  if 0 {
+    if [file exists MarkNam_$barcode.txt] {
+      file delete -force MarkNam_$barcode.txt
+    }
+    
+    if {![file exist $gaSet(JavaPath)]} {
+      set txt  "Java application is missing"
+      set res [DialogBox -text $txt -icon /images/error.gif -title "Get Dbr Name"]
+      return -1
+    }
+    catch {exec $gaSet(JavaPath) -jar OI4Barcode.jar $barcode} b
+    set fileName MarkNam_$barcode.txt
+    after 1000
+    if ![file exists MarkNam_$barcode.txt] {
+      set txt  "File $fileName is not created. Verify the Barcode"
+      #set res [DialogBox -text $txt -icon /images/error.gif -title "Get Dbr Name"]
+      return $txt
+    }
+    
+    set fileId [open "$fileName"]
+      seek $fileId 0
+      set res [read $fileId]    
+    close $fileId
+    
+    after 500
     file delete -force MarkNam_$barcode.txt
+    
+    #set txt "$barcode $res"
+    set txt "[string trim $res]"
+    puts "GetDbrName txt: <$txt> res:<$res>"
+    if [string match *ERROR* $txt] {
+      return $txt  
+    }
+    update
+    set gaSet(DutFullName) $res
+    #file mkdir [regsub -all / $res .]
   }
   
-  if {![file exist $gaSet(JavaPath)]} {
-    set txt  "Java application is missing"
-    set res [DialogBox -text $txt -icon /images/error.gif -title "Get Dbr Name"]
-    return -1
+  foreach {ret resTxt} [::RLWS::Get_OI4Barcode  $barcode] {}
+  if {$ret=="0"} {
+    set dbrName $resTxt
+    puts "GetDbrName dbrName: <$dbrName>"
+    set gaSet(DutFullName) $dbrName
+    puts ""
+    return 0
+  } else {
+    return $resTxt  
   }
-  catch {exec $gaSet(JavaPath) -jar OI4Barcode.jar $barcode} b
-  set fileName MarkNam_$barcode.txt
-  after 1000
-  if ![file exists MarkNam_$barcode.txt] {
-    set txt  "File $fileName is not created. Verify the Barcode"
-    #set res [DialogBox -text $txt -icon /images/error.gif -title "Get Dbr Name"]
-    return $txt
-  }
-  
-  set fileId [open "$fileName"]
-    seek $fileId 0
-    set res [read $fileId]    
-  close $fileId
-  
-  after 500
-  file delete -force MarkNam_$barcode.txt
-  
-  #set txt "$barcode $res"
-  set txt "[string trim $res]"
-  puts "GetDbrName txt: <$txt> res:<$res>"
-  if [string match *ERROR* $txt] {
-    return $txt  
-  }
-  update
-  set gaSet(DutFullName) $res
-  #file mkdir [regsub -all / $res .]
-  
-  puts ""
-  return 0
 }
 
 # ***************************************************************************
