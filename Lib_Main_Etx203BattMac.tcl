@@ -8,6 +8,8 @@ proc ScanUutBarcode {ba} {
   update
   puts "ScanUutBarcode $ba"; update
   set gaSet(act) 1
+  set uutsList [list]
+  set gaSet(powerOffOnDone) 0
   Power all on
   
   for {set i 1} {$i<=$gaSet(maxMultiQty)} {incr i} {
@@ -29,8 +31,9 @@ proc ScanUutBarcode {ba} {
         } else {
           DialogBox -title "Wrong ID barcode" -message "$barc is not legal ($i)" -type Ok
           return -1
-        }
-        
+        }        
+      } else {
+        lappend uutsList $i
       }
     }
     

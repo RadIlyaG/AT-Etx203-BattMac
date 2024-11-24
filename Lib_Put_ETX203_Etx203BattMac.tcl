@@ -105,6 +105,7 @@ proc Login {bar} {
     cellcom  {set user "admin"  ; set password "Reshatot"}
     kos      {set user "su"     ; set password "Mgrthde6zZMbhA"}
     GC       {set user "su"     ; set password "naijah6E"}
+    GCN      {set user "su"     ; set password "GlobalConnect1234"}
     default  {set user "su"     ; set password "1234"}
   }  
   Status "Login into ETX-2x"
@@ -551,13 +552,19 @@ proc VerifySN {bar} {
 # ***************************************************************************
 proc DyingGasp {bar} {
   global gaSet buffer gaGui
-  set ret [Dyigasp_ClearLog $bar]
-  if {$ret!=0} {return $ret}
-  Power all off
-  after 3000
-  Power all on
-  set ret [Wait "Wait UUT up" 30 white]
-  if {$ret!=0} {return $ret}
+  #set firstUut [lindex $uutsList 0]
+  #puts "bar:$bar firstUut:$firstUut"
+  puts "gaSet(powerOffOnDone): $gaSet(powerOffOnDone)"
+  if !$gaSet(powerOffOnDone) {
+    #set ret [Dyigasp_ClearLog $bar]
+    #if {$ret!=0} {return $ret}
+    Power all off
+    after 3000
+    Power all on
+    set gaSet(powerOffOnDone) 1
+    set ret [Wait "Wait UUT up" 30 white]
+    if {$ret!=0} {return $ret}
+  }
   set ret [Dyigasp_ReadLog $bar]
   return $ret
   
