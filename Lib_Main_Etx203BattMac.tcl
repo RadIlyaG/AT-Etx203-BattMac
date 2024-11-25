@@ -149,6 +149,27 @@ proc ScanUutBarcode {ba} {
       }
     }
     
+    for {set bar 1} {$bar <= $gaSet(maxMultiQty)} {incr bar} {
+      set barc $gaSet(entDUT$bar)
+      if {[string length $barc] ne "11" && [string length $barc] ne "12"} {set ret 0; continue}
+      if {[info command Dyigasp_ClearLog]=="Dyigasp_ClearLog" && $gaSet(performDgTest)==1} {
+        catch {RLEH::Close}
+        catch {RLSerial::Close $gaSet(comDut$bar)}
+        RLEH::Open
+        switch -exact -- $gaSet(testedProduct) {
+          ETX203 - ASMi54 - ETX205 - ETX-203AX-E1 - ETX2i10G - ETX2iB - ETX203SHDSLB {RLSerial::Open $gaSet(comDut$bar) 9600 n 8 1}
+          ASMi53 {RLSerial::Open $gaSet(comDut$bar) 115200 n 8 1}
+        }
+        set ret [Dyigasp_ClearLog $bar]
+        if {$ret!=0} {
+          
+          $gaGui(entDUT$bar) configure -bg red -text "$barc. $gaSet(fail)" 
+          AddToLog "$barc. $gaSet(fail)"
+        }    
+        catch {RLEH::Close}
+        catch {RLSerial::Close $gaSet(comDut$bar)}        
+      }
+    }
     
     for {set bar 1} {$bar <= $gaSet(maxMultiQty)} {incr bar} {   
       set gaSet($bar.dbrMac) Mac
