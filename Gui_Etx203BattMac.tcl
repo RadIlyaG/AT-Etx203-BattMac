@@ -42,7 +42,13 @@ proc GUI {} {
         {radiobutton "GCN" {} "GCN" {} -command {} -variable gaSet(userPassOpt) -value GCN}
       }
       }
-
+      {separator} 
+      {cascad "Power" {} pwr 0 {
+        {command "PS ON" {} "" {} -command {Power all ON}} 
+        {command "PS OFF" {} "" {} -command {Power all OFF}}       
+      }
+      }                
+      
     }
     "&About" all about 0 {
       {command "&About" about "" {} -command {About} 
@@ -71,6 +77,13 @@ proc GUI {} {
         -justify center -values [lsort [list ETX203 ASMi54 ETX205 ASMi53 ETX-203AX-E1 ETX2i10G ETX2iB ETX203SHDSLB]] \
         -modifycmd {global gaSet ; source Lib_Put_[set gaSet(testedProduct)]_Etx203BattMac.tcl}]
       pack $l1 $gaGui(testedProduct) -side left  
+      
+      # set bb [ButtonBox $fr30.bbox3 -spacing 1]
+      # set gaGui(butPwrOn) [$bb add -image [image create photo -file images/powerOn.ico] \
+          # -takefocus 0 -command {Power all ON} -bd 1 -helptext "PS ON"] 
+      # set gaGui(butPwrOff) [$bb add -image [image create photo -file images/powerOff.ico] \
+          # -takefocus 0 -command {Power all OFF} -bd 1 -helptext "PS OFF"]         
+      # pack $bb -side left  -anchor w -padx 7
     pack configure $fr30 -fill x
     set fr32 [TitleFrame $fr3.fr32 -relief groove -bd 2 -text "Partial tests"]
       set fr32f [$fr32 getframe]

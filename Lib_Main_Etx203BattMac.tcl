@@ -10,7 +10,9 @@ proc ScanUutBarcode {ba} {
   set gaSet(act) 1
   set uutsList [list]
   set gaSet(powerOffOnDone) 0
-  Power all on
+  if $gaSet(performDgTest) {
+    Power all on
+  }
   
   for {set i 1} {$i<=$gaSet(maxMultiQty)} {incr i} {
     $gaGui(entDUT$i) configure -bg SystemWindow -fg SystemWindowText -text [string toupper [$gaGui(entDUT$i) cget -text]]
