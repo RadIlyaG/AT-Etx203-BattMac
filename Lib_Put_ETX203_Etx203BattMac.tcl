@@ -593,7 +593,8 @@ proc Dyigasp_ClearLog {bar} {
   if {$ret!=0} {return $ret}
   set ret [Send $com "clear-alarm-log  all\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}
-  set ret [Send $com "show brief-log\r" $gaSet(prompt)]
+  #set ret [Send $com "show brief-log\r" $gaSet(prompt)]
+  set ret [Send $com "show log\r" "reporting#" ]
   if {$ret!=0} {return $ret}
   return $ret
 }
@@ -619,7 +620,8 @@ proc Dyigasp_ReadLog {bar} {
   if {$ret!=0} {return $ret}
   set ret [Send $com "reporting\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}
-  Send $com "show brief-log\r" "stam 0.5"
+  #Send $com "show brief-log\r" "stam" 0.5
+  Send $com "show log\r" more
   set ret -1
   for {set i 1} {$i<=5} {incr i} {
     if {[string match *dying_gasp* $buffer]} {
@@ -630,6 +632,7 @@ proc Dyigasp_ReadLog {bar} {
     if {[string match *reporting* $buffer]} {
       break
     }
+    Send $com "\r" "stam" 1
   }
   if {$ret eq "-1"} {
     set gaSet(fail) "No \'dying_gasp\' event in the Log" 
