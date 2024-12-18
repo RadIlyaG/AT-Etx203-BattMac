@@ -137,12 +137,19 @@ proc Login {bar} {
     Send $com \x1F\r\r -2I
   }
   if {[string match *203* $buffer]} {
-    set ret 0
-    set gaSet(prompt) 203
-    Send $com "exit all\r" $gaSet(prompt) 2
-    set ret [CheckPrompt]
-    puts "Login.1 Ret of CheckPrompt: <$ret>" ; update
-    return $ret
+    puts "if0 <$buffer>"
+    if {[string match {*Device : ETX-203AX*} $buffer]==1 || \
+        [string match {*Name : ETX-203AX*} $buffer]==1 || \
+        [string match {*Model : ETX-203AX*} $buffer]==1} {
+      puts "if0.1 <$buffer>"
+    } else {
+      set ret 0
+      set gaSet(prompt) 203
+      Send $com "exit all\r" $gaSet(prompt) 2
+      set ret [CheckPrompt]
+      puts "Login.1 Ret of CheckPrompt: <$ret>" ; update
+      return $ret
+    }
   }
   if {[string match *ztp* $buffer]} {
     set ret 0
@@ -221,8 +228,14 @@ proc Login {bar} {
         [string match {*TYPE-3*} $buffer]==1 || [string match {*fullsave-rad*} $buffer]==1 ||\
         [string match {*eff-rad*} $buffer]==1} {
       puts "if1 <$buffer>"
-      set ret 0
-      break
+      if {[string match {*Device : ETX-203AX*} $buffer]==1 || \
+          [string match {*Name : ETX-203AX*} $buffer]==1 || \
+          [string match {*Model : ETX-203AX*} $buffer]==1} {
+        puts "if1.1 <$buffer>"
+      } else {
+        set ret 0
+        break
+      }
     }
     ## exit from boot menu 
     if {[string match *boot* $buffer]} {
@@ -344,12 +357,12 @@ proc ReadHWver {bar} {
   set com $gaSet(comDut$bar)
   set ret [Send $com "exit all\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}  
-  set ret [Send $com "configure system\r" $gaSet(prompt)]
+  set ret [Send $com "configure system\r" ">system"]
   if {$ret!=0} {return $ret}
   if {$gaSet(userPassOpt)=="kos"} {
     set ret [Send $com "show device-information\r" "#"]
   } else { 
-    set ret [Send $com "show device-information\r" $gaSet(prompt)]
+    set ret [Send $com "show device-information\r" ">system"]
   }
   if {$ret!=0} {return $ret}
   set res [regexp {Hw\:\s+([\d\.\(\)\w\/ ]+)\,\s} $buffer ma val ]
@@ -587,11 +600,11 @@ proc Dyigasp_ClearLog {bar} {
   set gaSet(fail) "Clear Log fail"  
   set ret [Send $com "exit all\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}
-  set ret [Send $com "configure\r" $gaSet(prompt)]
+  set ret [Send $com "configure\r" ">config"]
   if {$ret!=0} {return $ret}
-  set ret [Send $com "reporting\r" $gaSet(prompt)]
+  set ret [Send $com "reporting\r" ">reporting"]
   if {$ret!=0} {return $ret}
-  set ret [Send $com "clear-alarm-log  all\r" $gaSet(prompt)]
+  set ret [Send $com "clear-alarm-log  all\r" ">reporting"]
   if {$ret!=0} {return $ret}
   #set ret [Send $com "show brief-log\r" $gaSet(prompt)]
   set ret [Send $com "show log\r" "reporting#" ]
@@ -616,16 +629,16 @@ proc Dyigasp_ReadLog {bar} {
   set gaSet(fail) "Read Log fail"  
   set ret [Send $com "exit all\r" $gaSet(prompt)]
   if {$ret!=0} {return $ret}
-  set ret [Send $com "configure\r" $gaSet(prompt)]
+  set ret [Send $com "configure\r" ">config"]
   if {$ret!=0} {return $ret}
-  set ret [Send $com "reporting\r" $gaSet(prompt)]
+  set ret [Send $com "reporting\r" ">reporting"]
   if {$ret!=0} {return $ret}
   #Send $com "show brief-log\r" "stam" 0.5
-  Send $com "show log\r" more
+  Send $com "show log\r" "more"
   set ret -1
   for {set i 1} {$i<=5} {incr i} {
-    if {[string match *dying_gasp* $buffer]} {
-      set ret [Send $com "\3\r\r\r"  $gaSet(prompt)]
+    if {[string match *dying_gasp* $buffer] || [string match {*Dying gasp*} $buffer]} {
+      set ret [Send $com "\3\r\r\r" ">reporting"]
       set ret 0
       break
     }
