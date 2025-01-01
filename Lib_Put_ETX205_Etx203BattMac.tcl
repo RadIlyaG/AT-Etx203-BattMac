@@ -150,7 +150,13 @@ proc Login {bar} {
     set gaSet(prompt) TYPE-3_e
     Send $com "exit all\r" $gaSet(prompt) 2
     return 0
-  }       
+  }  
+if {[string match *ZTP* $buffer]} {
+    set ret 0
+    set gaSet(prompt) ZTP
+    Send $com "exit all\r" $gaSet(prompt) 2
+    return 0
+  }   
   if {[string match *->* $buffer]} {
     set ret 0
     Send $com exit\r\r stam 2
@@ -169,6 +175,9 @@ proc Login {bar} {
     } elseif {[string match {*TYPE-3_e*} $buffer]==1} {
       set gaSet(prompt) TYPE-3_e
       set ret 0
+    } elseif {[string match {*ZTP*} $buffer]==1} {
+      set gaSet(prompt) ZTP
+      set ret 0
     }
     $gaSet(runTime) configure -text ""
     return $ret
@@ -186,7 +195,7 @@ proc Login {bar} {
     Send $com \r stam 5
     #set ret [MyWaitFor $gaSet(comDut) {ETX-2I user> } 5 60]
     if {([string match {*205*} $buffer]==1) || ([string match {*user>*} $buffer]==1) || \
-        ([string match {*TYPE-3_e*} $buffer]==1)} {
+        ([string match {*TYPE-3_e*} $buffer]==1) || ([string match {*ZTP*} $buffer]==1)} {
       puts "if1 <$buffer>"
       set ret 0
       break
@@ -209,6 +218,9 @@ proc Login {bar} {
         set gaSet(prompt) 205
       } elseif {[string match {*TYPE-3_e*} $buffer]==1} {
         set gaSet(prompt) TYPE-3_e
+        set ret 0
+      } elseif {[string match {*ZTP*} $buffer]==1} {
+        set gaSet(prompt) ZTP
         set ret 0
       }
     }
