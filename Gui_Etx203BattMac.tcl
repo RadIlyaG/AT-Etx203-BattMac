@@ -40,6 +40,7 @@ proc GUI {} {
         {radiobutton "KOS" {} "KOS" {} -command {} -variable gaSet(userPassOpt) -value kos}
         {radiobutton "GC" {} "GC" {} -command {} -variable gaSet(userPassOpt) -value GC}
         {radiobutton "GCN" {} "GCN" {} -command {} -variable gaSet(userPassOpt) -value GCN}
+        {radiobutton "ROG" {} "ROG" {} -command {} -variable gaSet(userPassOpt) -value ROG}
       }
       }
       {separator} 

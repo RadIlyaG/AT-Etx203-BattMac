@@ -106,6 +106,7 @@ proc Login {bar} {
     kos      {set user "su"     ; set password "Mgrthde6zZMbhA"}
     GC       {set user "su"     ; set password "naijah6E"}
     GCN      {set user "su"     ; set password "GlobalConnect1234"}
+    ROG      {set user "rad"     ; set password "rogersesa-rad!"}
     default  {set user "su"     ; set password "1234"}
   }  
   Status "Login into ETX-2x"
@@ -175,6 +176,12 @@ proc Login {bar} {
     Send $com "exit all\r" $gaSet(prompt) 2
     return 0
   }
+  if {[string match *ATT-RAD* $buffer]} {
+    set ret 0
+    set gaSet(prompt) ATT-RAD
+    Send $com "exit all\r" $gaSet(prompt) 2
+    return 0
+  }
   if {[string match *->* $buffer]} {
     set ret 0
     Send $com exit\r\r stam 2
@@ -202,6 +209,9 @@ proc Login {bar} {
     } elseif {[string match {*eff-rad*} $buffer]==1} {
       set gaSet(prompt) eff-rad
       set ret 0
+    } elseif {[string match {*ATT-RAD*} $buffer]==1} {
+      set gaSet(prompt) ATT-RAD
+      set ret 0
     }
     $gaSet(runTime) configure -text ""
     if {$ret==0} {
@@ -226,7 +236,7 @@ proc Login {bar} {
     if {[string match {*203*} $buffer]==1    || [string match {*ztp*} $buffer]==1 || \
         [string match {*user>*} $buffer]==1  || [string match {*TYPE-1*} $buffer]==1 ||\
         [string match {*TYPE-3*} $buffer]==1 || [string match {*fullsave-rad*} $buffer]==1 ||\
-        [string match {*eff-rad*} $buffer]==1} {
+        [string match {*eff-rad*} $buffer]==1 || [string match {*ATT-RAD*} $buffer]==1} {
       puts "if1 <$buffer>"
       if {[string match {*Device : ETX-203AX*} $buffer]==1 || \
           [string match {*Name : ETX-203AX*} $buffer]==1 || \
@@ -274,6 +284,9 @@ proc Login {bar} {
         set ret 0
       } elseif {[string match {*eff-rad*} $buffer]==1} {
         set gaSet(prompt) eff-rad
+        set ret 0
+      } elseif {[string match {ATT-RAD*} $buffer]==1} {
+        set gaSet(prompt) ATT-RAD
         set ret 0
       }
     }
