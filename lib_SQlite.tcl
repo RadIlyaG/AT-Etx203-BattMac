@@ -73,7 +73,7 @@ proc SQliteAddLine {barcode} {
 
   for {set tr 1} {$tr <= 6} {incr tr} {
           #if [catch {UpdateDB $barcode $uut $hostDescription $date $tim-$gaSet(ButRunTime) $status $failTestsList $failReason $operator} res] {}
-    if [catch {RLWS::UpdateDB2 $barcode $uut $hostDescription $date $tim-$gaSet(ButRunTime) $status $failTestsList $failReason $operator "" "" "" "" ""} res] {  
+    if [catch {RLWS::UpdateDB2 $barcode $uut $hostDescription $date $tim-$gaSet(ButRunTime) $status $failTestsList $failReason $operator "" "" [info host] "" ""} res] {  
       set res "Try${tr}_fail.$res"
       
       puts "[MyTime] Web DataBase is not updated. Try:<$tr>. Res:<$res>" ; update
