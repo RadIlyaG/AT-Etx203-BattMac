@@ -191,6 +191,8 @@ proc Login {bar} {
   }
   if {[string match *user>* $buffer]} {
     if {$gaSet(userPassOpt)=="cellcom"} {
+      puts "Login.1.2 cellcom" ; update
+      Send $com "\r" stam 0.25
       Send $com "\r" stam 0.25
     }
     Send $com "$user\r" stam 0.25
